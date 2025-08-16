@@ -14,6 +14,10 @@ app.use(
 );
 app.use(express.json());
 
+app.get("/test", async (req, res) => {
+  res.send("backend is live");
+});
+
 app.post("/api/contact", async (req, res) => {
   const { name, email, message } = req.body;
   try {
