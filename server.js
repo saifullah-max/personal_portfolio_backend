@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend URL
+    origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app/"],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
