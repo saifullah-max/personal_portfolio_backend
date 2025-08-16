@@ -4,13 +4,25 @@ dotenv.config();
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 
+// --- Logging function ---
+function logError(errorDetails) {
+  const logFile = path.join(__dirname, "error.log");
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] ${errorDetails}\n`;
+  fs.appendFile(logFile, logMessage, (err) => {
+    if (err) console.error("Failed to write log:", err);
+  });
+}
+
 // --- CORS Setup ---
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  "https://peakcodestudiobackend.netlify.app", // deployed frontend
+  "http://localhost:5173",
+  "https://peakcodestudiov2.netlify.app", // frontend deployed
 ];
 
 const corsOptions = {
@@ -18,8 +30,9 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(`Blocked CORS request from origin: ${origin}`);
-      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      const message = `Blocked CORS request from origin: ${origin}`;
+      logError(message); // log blocked CORS
+      callback(new Error(message));
     }
   },
   methods: ["GET", "POST", "OPTIONS"],
@@ -42,6 +55,10 @@ app.post("/api/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
+    const msg = `Validation failed: missing fields - ${JSON.stringify(
+      req.body
+    )}`;
+    logError(msg);
     return res
       .status(400)
       .json({ success: false, error: "All fields are required" });
@@ -67,7 +84,10 @@ app.post("/api/contact", async (req, res) => {
     console.log("Email sent!");
     res.json({ success: true });
   } catch (error) {
-    console.error("Email error:", error);
+    const msg = `Email error: ${error.message} | Data: ${JSON.stringify(
+      req.body
+    )}`;
+    logError(msg);
     res.status(500).json({ success: false, error: "Email failed" });
   }
 });
