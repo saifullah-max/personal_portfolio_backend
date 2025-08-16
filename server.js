@@ -5,13 +5,14 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app"],
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app"],
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // allow preflight for all routes
 app.use(express.json());
 
 app.get("/test", async (req, res) => {
