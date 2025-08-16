@@ -8,19 +8,18 @@ const cors = require("cors");
 const app = express();
 
 // --- CORS Setup ---
-// Only allow requests from your frontend URLs
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://peakcodestudiobackend.netlify.app", // replace with your actual deployed frontend
+  "https://peakcodestudiobackend.netlify.app", // deployed frontend
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // allow requests with no origin (like Postman or server-to-server)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      console.warn(`Blocked CORS request from origin: ${origin}`);
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
     }
   },
   methods: ["GET", "POST", "OPTIONS"],
@@ -53,7 +52,7 @@ app.post("/api/contact", async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // use app password
+        pass: process.env.EMAIL_PASS,
       },
     });
 
