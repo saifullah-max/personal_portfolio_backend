@@ -28,10 +28,10 @@ app.post("/api/contact", async (req, res) => {
         pass: process.env.EMAIL_PASS, // app password here
       },
     });
-
     await transporter.sendMail({
-      from: email,
-      to: process.env.TARGET_EMAIL,
+      from: process.env.EMAIL_USER, // your Gmail
+      to: process.env.TARGET_EMAIL, // where you want to receive
+      replyTo: email, // so reply goes to the user
       subject: `New contact form submission from ${name}`,
       text: `${email} - ${message}`,
     });
