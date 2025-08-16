@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app/"],
+    origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app"],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
@@ -36,6 +36,7 @@ app.post("/api/contact", async (req, res) => {
       text: `${email} - ${message}`,
     });
 
+    console.log("Email sent!");
     res.json({ success: true });
   } catch (error) {
     console.error("Email error:", error);
