@@ -1,38 +1,52 @@
+// server.js
+const dotenv = require("dotenv")
+dotenv.config()
 const express = require("express");
 const nodemailer = require("nodemailer");
-require("dotenv").config();
 const cors = require("cors");
 
 const app = express();
 
+// --- CORS Setup ---
 const corsOptions = {
   origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app"],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
 };
-
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // allow preflight for all routes
+
+// --- Body parser ---
 app.use(express.json());
 
-app.get("/test", async (req, res) => {
-  res.send("backend is live");
+// --- Test route ---
+app.get("/test", (req, res) => {
+  res.send("Backend is live");
 });
 
+// --- Contact route ---
 app.post("/api/contact", async (req, res) => {
   const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res
+      .status(400)
+      .json({ success: false, error: "All fields are required" });
+  }
+
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // app password here
+        pass: process.env.EMAIL_PASS, // Use app password
       },
     });
+
     await transporter.sendMail({
-      from: process.env.EMAIL_USER, // your Gmail
-      to: process.env.TARGET_EMAIL, // where you want to receive
-      replyTo: email, // so reply goes to the user
+      from: process.env.EMAIL_USER,
+      to: process.env.TARGET_EMAIL,
+      replyTo: email,
       subject: `New contact form submission from ${name}`,
       text: `${email} - ${message}`,
     });
@@ -45,5 +59,6 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
+// --- Start server ---
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
