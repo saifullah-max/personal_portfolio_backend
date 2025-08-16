@@ -1,22 +1,34 @@
 // server.js
-const dotenv = require("dotenv")
-dotenv.config()
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 
 const app = express();
 
-// // --- CORS Setup ---
-// const corsOptions = {
-//   origin: ["http://localhost:5173", "https://peakcodestudiov2.netlify.app"],
-//   methods: ["GET", "POST", "OPTIONS"],
-//   allowedHeaders: ["Content-Type"],
-// };
-// app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions)); // allow preflight for all routes
+// --- CORS Setup ---
+// Only allow requests from your frontend URLs
+const allowedOrigins = [
+  "http://localhost:5173", // local dev
+  "https://peakcodestudiobackend.netlify.app", // replace with your actual deployed frontend
+];
 
-app.use(cors())
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman or server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight requests
 
 // --- Body parser ---
 app.use(express.json());
@@ -41,7 +53,7 @@ app.post("/api/contact", async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Use app password
+        pass: process.env.EMAIL_PASS, // use app password
       },
     });
 
