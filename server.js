@@ -25,8 +25,7 @@ const allowedOrigins = [
   "https://peakcodestudiov2.netlify.app",
   "https://peakcodestudio.com",
   "peakcodestudio.com",
-  "www.peakcodestudio.com"
-
+  "www.peakcodestudio.com",
 ];
 
 const corsOptions = {
