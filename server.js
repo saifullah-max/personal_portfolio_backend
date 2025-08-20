@@ -22,7 +22,11 @@ function logError(errorDetails) {
 // --- CORS Setup ---
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://peakcodestudiov2.netlify.app", // frontend deployed
+  "https://peakcodestudiov2.netlify.app",
+  "https://peakcodestudio.com",
+  "peakcodestudio.com",
+  "www.peakcodestudio.com"
+
 ];
 
 const corsOptions = {
